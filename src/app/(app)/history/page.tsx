@@ -17,12 +17,10 @@ export default function HistoryPage(props: { searchParams: Promise<Search> }) {
   );
 }
 
-/** FR-12 변동 이력: 최근 90일, 품목으로 거르기 */
-async function History({ searchParams }: { searchParams: Promise<Search> }) {
-  if (!(await getSessionUser())) redirect("/login");
-  const { q } = await searchParams;
+// 데이터 조회 (컴포넌트 밖: 현재 시각 계산을 렌더링에서 분리)
+async function loadHistory(q: string | undefined) {
   const since = new Date(Date.now() - DAYS * 86_400_000);
-  const rows = await prisma.adjustment.findMany({
+  return prisma.adjustment.findMany({
     where: {
       createdAt: { gte: since },
       ...(q ? { OR: [{ itemCode: { contains: q.toUpperCase() } }, { item: { name: { contains: q } } }] } : {}),
@@ -31,6 +29,13 @@ async function History({ searchParams }: { searchParams: Promise<Search> }) {
     orderBy: { createdAt: "desc" },
     take: 200,
   });
+}
+
+/** FR-12 변동 이력: 최근 90일, 품목으로 거르기 */
+async function History({ searchParams }: { searchParams: Promise<Search> }) {
+  if (!(await getSessionUser())) redirect("/login");
+  const { q } = await searchParams;
+  const rows = await loadHistory(q);
   return (
     <div className="space-y-3 py-3">
       <h1 className="text-lg font-bold">변동 이력 (최근 {DAYS}일)</h1>
