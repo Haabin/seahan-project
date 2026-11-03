@@ -29,6 +29,9 @@ async function Header() {
           <Link href="/" className="text-base font-bold">
             출고·재고 보드
           </Link>
+          <Link href="/history" className="text-xs text-blue-600 underline">
+            이력
+          </Link>
           {(user.role === "EDITOR" || user.role === "ADMIN") && (
             <Link href="/plans" className="text-xs text-blue-600 underline">
               생산 계획
