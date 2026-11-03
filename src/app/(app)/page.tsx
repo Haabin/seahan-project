@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { getSettings, getSites, getStockList } from "@/lib/stock";
+import { toggleFavorite } from "./actions";
 import { fmtNum } from "@/lib/format";
 
 type Search = { q?: string; site?: string };
@@ -16,13 +17,14 @@ export default function StockListPage(props: { searchParams: Promise<Search> }) 
 }
 
 async function StockList({ searchParams }: { searchParams: Promise<Search> }) {
-  if (!(await getSessionUser())) redirect("/login"); // FR-01: 미등록·만료 세션 차단
+  const user = await getSessionUser();
+  if (!user) redirect("/login"); // FR-01: 미등록·만료 세션 차단
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
   const settings = await getSettings();
   const sites = settings.siteFilterEnabled ? await getSites() : [];
   const site = settings.siteFilterEnabled && sp.site ? sp.site : null;
-  const rows = await getStockList(q, site);
+  const rows = await getStockList(q, site, user.id);
 
   return (
     <div>
@@ -58,8 +60,18 @@ async function StockList({ searchParams }: { searchParams: Promise<Search> }) {
       <ul className="divide-y rounded-lg border bg-white">
         {rows.length === 0 && <li className="p-6 text-center text-sm text-gray-500">찾는 품목이 없습니다.</li>}
         {rows.map((r) => (
-          <li key={r.code}>
-            <Link href={`/items/${encodeURIComponent(r.code)}`} className="flex items-center gap-3 px-4 py-3 active:bg-gray-50">
+          <li key={r.code} className="flex items-stretch">
+            {/* FR-11 즐겨찾기 */}
+            <form action={toggleFavorite} className="flex items-center pl-2">
+              <input type="hidden" name="itemCode" value={r.code} />
+              <button
+                aria-label={r.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                className={`px-1 text-xl ${r.isFavorite ? "text-yellow-500" : "text-gray-300"}`}
+              >
+                ★
+              </button>
+            </form>
+            <Link href={`/items/${encodeURIComponent(r.code)}`} className="flex min-w-0 flex-1 items-center gap-3 py-3 pr-4 pl-1 active:bg-gray-50">
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{r.name}</p>
                 <p className="text-xs text-gray-500">

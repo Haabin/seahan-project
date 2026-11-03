@@ -44,21 +44,26 @@ export interface StockRow {
   erpQty: number;
   calc: AvailableQtyResult;
   plannedQty: number; // 완료되지 않은 생산 계획 수량 합 (FR-14 "추가 생산 예정")
+  isFavorite: boolean; // FR-11
 }
 
-/** 재고 목록 (FR-02, FR-03, FR-06). siteCode가 없으면 사업장 합산 */
-export async function getStockList(q: string, siteCode: string | null): Promise<StockRow[]> {
+/** 재고 목록 (FR-02, FR-03, FR-06, FR-11). siteCode가 없으면 사업장 합산. 즐겨찾기는 맨 위 */
+export async function getStockList(q: string, siteCode: string | null, userId?: string): Promise<StockRow[]> {
   const nq = normalizeForSearch(q);
-  const items = await prisma.item.findMany({
-    where: { isActive: true, ...(nq ? { nameNormalized: { contains: nq } } : {}) },
-    orderBy: { name: "asc" },
-    include: {
-      stocks: siteCode ? { where: { siteCode } } : true,
-      adjustments: { where: { status: "ACTIVE", ...(siteCode ? { siteCode } : {}) } },
-      plans: { where: { stage: { isFinal: false }, ...(siteCode ? { siteCode } : {}) } },
-    },
-  });
-  return items.map((it) => {
+  const [items, favorites] = await Promise.all([
+    prisma.item.findMany({
+      where: { isActive: true, ...(nq ? { nameNormalized: { contains: nq } } : {}) },
+      orderBy: { name: "asc" },
+      include: {
+        stocks: siteCode ? { where: { siteCode } } : true,
+        adjustments: { where: { status: "ACTIVE", ...(siteCode ? { siteCode } : {}) } },
+        plans: { where: { stage: { isFinal: false }, ...(siteCode ? { siteCode } : {}) } },
+      },
+    }),
+    userId ? prisma.favorite.findMany({ where: { userId }, select: { itemCode: true } }) : Promise.resolve([]),
+  ]);
+  const fav = new Set(favorites.map((f) => f.itemCode));
+  const rows = items.map((it) => {
     const erpQty = it.stocks.reduce((s, r) => s + r.erpQty, 0);
     return {
       code: it.code,
@@ -69,8 +74,10 @@ export async function getStockList(q: string, siteCode: string | null): Promise<
       erpQty,
       calc: calcAvailableQty({ erpQty, adjustments: it.adjustments }),
       plannedQty: it.plans.reduce((s, p) => s + p.plannedQty, 0),
+      isFavorite: fav.has(it.code),
     };
   });
+  return rows.sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
 }
 
 /** 품목 상세 (FR-04, FR-14, FR-15, FR-17) */
