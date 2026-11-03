@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { canEdit, getSessionUser } from "@/lib/auth";
+import { parseDateOnly } from "@/lib/format";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -28,8 +29,8 @@ export async function addPlan(_prev: Result | undefined, formData: FormData): Pr
       itemCode,
       siteCode,
       plannedQty,
-      startDate: startDate ? new Date(startDate) : null,
-      dueDate: new Date(dueDate),
+      startDate: startDate ? parseDateOnly(startDate) : null,
+      dueDate: parseDateOnly(dueDate),
       stageCode,
       memo,
       createdById: user!.id,

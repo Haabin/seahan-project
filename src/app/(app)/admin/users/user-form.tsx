@@ -10,11 +10,11 @@ export function UserForm() {
   return (
     <form action={action} className="space-y-2 rounded-lg border bg-gray-50 p-3">
       <p className="text-sm font-semibold">계정 만들기</p>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
         <input name="loginId" placeholder="아이디" autoCapitalize="none" required className={input} />
         <input name="name" placeholder="이름" required className={input} />
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
         <input name="password" type="password" placeholder="초기 비밀번호" required className={input} />
         <select name="role" className={input} defaultValue="VIEWER">
           <option value="VIEWER">영업팀 (조회)</option>

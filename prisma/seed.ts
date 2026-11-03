@@ -48,11 +48,10 @@ function mulberry32(seed: number) {
 }
 const rand = mulberry32(20261103);
 const randInt = (min: number, max: number) => min + Math.floor(rand() * (max - min + 1));
+// 날짜 전용 컬럼(@db.Date)은 UTC 자정으로 저장한다 (src/lib/format.ts dateOnlyFromToday 와 같은 규칙)
 const daysFromNow = (d: number) => {
-  const x = new Date();
-  x.setHours(0, 0, 0, 0);
-  x.setDate(x.getDate() + d);
-  return x;
+  const kst = new Date(Date.now() + 9 * 3600_000);
+  return new Date(Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate()) + d * 86_400_000);
 };
 
 const SITES = [

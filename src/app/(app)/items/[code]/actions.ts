@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { canEdit, getSessionUser } from "@/lib/auth";
 import { ADJUSTMENT_TYPES, type AdjustmentTypeCode } from "@/lib/domain/availableQty";
+import { parseDateOnly } from "@/lib/format";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -60,7 +61,7 @@ export async function addConsultNote(_prev: Result | undefined, formData: FormDa
   if (!Number.isInteger(requestedQty) || requestedQty <= 0) return { ok: false, error: "요청 수량을 입력하세요." };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(desiredDate)) return { ok: false, error: "희망 납기를 선택하세요." };
 
-  const data = { itemCode, customerName, requestedQty, desiredDate: new Date(desiredDate), content, authorId: user.id };
+  const data = { itemCode, customerName, requestedQty, desiredDate: parseDateOnly(desiredDate), content, authorId: user.id };
   const note = await prisma.consultNote.create({ data });
   await prisma.consultNoteHistory.create({ data: { noteId: note.id, action: "CREATE", snapshot: data, actorId: user.id } });
   revalidatePath(`/items/${encodeURIComponent(itemCode)}`);

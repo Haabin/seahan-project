@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { addPlan } from "./actions";
 
-const input = "w-full rounded-lg border px-3 py-2.5 text-base";
+const input = "w-full min-w-0 rounded-lg border px-3 py-2.5 text-base";
 
 export function PlanForm({
   sites,
@@ -26,7 +26,7 @@ export function PlanForm({
           </option>
         ))}
       </datalist>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
         <select name="siteCode" className={input} defaultValue={sites[0]?.code}>
           {sites.map((s) => (
             <option key={s.code} value={s.code}>
@@ -36,7 +36,7 @@ export function PlanForm({
         </select>
         <input name="plannedQty" type="number" min={1} inputMode="numeric" placeholder="계획 수량" required className={input} />
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
         <label className="text-xs text-gray-600">
           착수 예정일
           <input name="startDate" type="date" className={input} />
