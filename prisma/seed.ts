@@ -132,9 +132,10 @@ async function main() {
   for (const it of items) {
     for (const s of SITES) {
       let erpQty = it.packQty ? it.packQty * randInt(5, 60) : randInt(500, 50_000);
-      if (it.code === scenarioA.code && s.code === "EUMSEONG") erpQty = 100;
-      if (it.code === scenarioB.code && s.code === "EUMSEONG") erpQty = 120;
-      if (it.code === scenarioC.code && s.code === "CHEONGJU") erpQty = 30;
+      // 시나리오 품목은 다른 사업장 재고를 0으로 두어 합산 화면에서도 100→90, 120, 30이 그대로 보이게 한다
+      if (it.code === scenarioA.code) erpQty = s.code === "EUMSEONG" ? 100 : 0;
+      if (it.code === scenarioB.code) erpQty = s.code === "EUMSEONG" ? 120 : 0;
+      if (it.code === scenarioC.code) erpQty = s.code === "CHEONGJU" ? 30 : 0;
       const key = { itemCode: it.code, siteCode: s.code };
       await prisma.erpStock.upsert({
         where: { itemCode_siteCode: key },
