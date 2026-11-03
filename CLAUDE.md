@@ -76,11 +76,18 @@ tests/           단위·E2E 테스트
 ## 8. 자주 쓰는 명령
 
 ```
-npm run dev              개발 서버
-npm test                 단위 테스트
-npm run test:e2e         화면 테스트
-npx prisma migrate dev   스키마 변경을 Supabase에 반영(DIRECT_URL 사용)
-npx prisma db seed       샘플 데이터 넣기
-npx vercel --prod        수동 운영 배포(평소에는 main 푸시로 자동 배포)
+npm run dev              개발 서버 (http://localhost:3000)
+npm test                 단위 테스트 (Vitest, DB 불필요)
+npm run test:e2e         화면 테스트 (Playwright, 2단계부터)
+npm run typecheck        tsc --noEmit
+npm run lint             eslint
+npm run db:generate      Prisma Client 생성 (prisma/generated, git 제외)
+npm run db:migrate       스키마 변경을 Supabase에 반영 (DIRECT_URL, prisma migrate dev)
+npm run db:deploy        운영 DB에 마이그레이션 적용 (prisma migrate deploy)
+npm run db:seed          샘플 데이터 넣기 (참고용 임의 데이터, 여러 번 실행해도 중복 없음)
+npm run db:extract       docs/sample 실적 파일에서 prisma/seed-data/*.json 다시 뽑기
+npm run db:studio        Prisma Studio로 데이터 보기
 ```
-(프로젝트를 만든 뒤 실제 명령과 다르면 이 절을 고친다.)
+- 로그인 시드 계정: admin / editor / viewer (비밀번호는 .env의 SEED_*_PASSWORD, 기본 test1234)
+- Next.js 16: params·searchParams·cookies()는 모두 await 필요, middleware 대신 proxy.ts 사용. 자세한 것은 node_modules/next/dist/docs/
+- Prisma 7: 접속 정보는 schema.prisma가 아니라 prisma.config.ts(DIRECT_URL)와 src/lib/db.ts(DATABASE_URL)에 있다

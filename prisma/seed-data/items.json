@@ -1,0 +1,365 @@
+{
+  "_note": "docs/sample 2025 실적에서 추출한 품목 마스터 (자사 생산품, 생산량 상위). 재고 수량은 없음.",
+  "items": [
+    {
+      "code": "FM00009",
+      "name": "소주 52.5G [PCO]",
+      "variantCode": "FSC00057P9",
+      "packUnit": null,
+      "packQty": 6000,
+      "capacityMl": 57,
+      "production2025": 45997637
+    },
+    {
+      "code": "FM00022",
+      "name": "원터치 38G CL",
+      "variantCode": "FZZ00038P9",
+      "packUnit": null,
+      "packQty": 10000,
+      "capacityMl": 38,
+      "production2025": 24780077
+    },
+    {
+      "code": "FM00031",
+      "name": "원터치 65G CL",
+      "variantCode": "FZZ00065P9",
+      "packUnit": null,
+      "packQty": 6000,
+      "capacityMl": 65,
+      "production2025": 21154602
+    },
+    {
+      "code": "FM00007",
+      "name": "원터치 49G [CL]",
+      "variantCode": "FSA00049P9",
+      "packUnit": null,
+      "packQty": 6000,
+      "capacityMl": 49,
+      "production2025": 20157852
+    },
+    {
+      "code": "FM00081",
+      "name": "원터치 24G [CL]",
+      "variantCode": "FZZ00020P1",
+      "packUnit": null,
+      "packQty": 12000,
+      "capacityMl": null,
+      "production2025": 13058452
+    },
+    {
+      "code": "TR00789",
+      "name": "참이슬 1.8L 15.7%",
+      "variantCode": "TSO01800P9",
+      "packUnit": "파렛트",
+      "packQty": 1014,
+      "capacityMl": 1800,
+      "production2025": 7887906
+    },
+    {
+      "code": "FM00077",
+      "name": "F-1 PCO 31g (32) CL",
+      "variantCode": "FZZ00031P1",
+      "packUnit": null,
+      "packQty": 13000,
+      "capacityMl": 31,
+      "production2025": 7409704
+    },
+    {
+      "code": "FM00079",
+      "name": "원터치 20G [CL]",
+      "variantCode": "FVI00065P1",
+      "packUnit": null,
+      "packQty": 13000,
+      "capacityMl": null,
+      "production2025": 6426468
+    },
+    {
+      "code": "FM00078",
+      "name": "F-1 홍초 65G [CL]",
+      "variantCode": "FVI00065P1",
+      "packUnit": null,
+      "packQty": 6000,
+      "capacityMl": 65,
+      "production2025": 4941375
+    },
+    {
+      "code": "FM00006",
+      "name": "발효초 65G [CL]",
+      "variantCode": "FVI00064P9",
+      "packUnit": null,
+      "packQty": 6000,
+      "capacityMl": null,
+      "production2025": 4869843
+    },
+    {
+      "code": "TR00785",
+      "name": "오리지널 1.8L 20.1% 가정",
+      "variantCode": "TSO01800P9",
+      "packUnit": "파렛트",
+      "packQty": 1014,
+      "capacityMl": 1800,
+      "production2025": 4776954
+    },
+    {
+      "code": "TM00663",
+      "name": "대상 간장 500 [F1_원터치 30G]",
+      "variantCode": "TSA00500P1",
+      "packUnit": "박스",
+      "packQty": 360,
+      "capacityMl": 500,
+      "production2025": 4447980
+    },
+    {
+      "code": "TR00796",
+      "name": "대상 초고추장 1.0L (F2_38G)",
+      "variantCode": "TSA01000P9",
+      "packUnit": "박스",
+      "packQty": 136,
+      "capacityMl": 1000,
+      "production2025": 4004720
+    },
+    {
+      "code": "FM00011",
+      "name": "ALCOA 48G CL",
+      "variantCode": "FTC00049P9",
+      "packUnit": null,
+      "packQty": 7000,
+      "capacityMl": 49,
+      "production2025": 3985012
+    },
+    {
+      "code": "TR00939",
+      "name": "대상 간장 500 (F1_ 24G)",
+      "variantCode": "TSA00500P1",
+      "packUnit": "박스",
+      "packQty": 360,
+      "capacityMl": 500,
+      "production2025": 3681360
+    },
+    {
+      "code": "TR00911",
+      "name": "액젓 1KG [F1_원터치 38G]",
+      "variantCode": "TSA01000P1",
+      "packUnit": "박스",
+      "packQty": 208,
+      "capacityMl": 1000,
+      "production2025": 3615692
+    },
+    {
+      "code": "TM00664",
+      "name": "맛술 410ML [F1_원터치 30G]",
+      "variantCode": "TSA00410P1",
+      "packUnit": "박스",
+      "packQty": 372,
+      "capacityMl": 410,
+      "production2025": 3505152
+    },
+    {
+      "code": "FM00071",
+      "name": "F2 - PCO 31g (32) CL",
+      "variantCode": "FZZ00027P9",
+      "packUnit": null,
+      "packQty": 10000,
+      "capacityMl": 27,
+      "production2025": 3140260
+    },
+    {
+      "code": "TR00788",
+      "name": "오리지널 1.8L 20.1%",
+      "variantCode": "TSO01800P9",
+      "packUnit": "파렛트",
+      "packQty": 1014,
+      "capacityMl": 1800,
+      "production2025": 3032874
+    },
+    {
+      "code": "FM00004",
+      "name": "F-2 홍초 65G [CL]",
+      "variantCode": "FVI00065P9",
+      "packUnit": null,
+      "packQty": 6000,
+      "capacityMl": 65,
+      "production2025": 3007592
+    },
+    {
+      "code": "TR00754",
+      "name": "CJ 올리고당 1.2",
+      "variantCode": "TSA01200P9",
+      "packUnit": "파렛트",
+      "packQty": 1890,
+      "capacityMl": 1200,
+      "production2025": 2985472
+    },
+    {
+      "code": "TR00354",
+      "name": "대상 간장 840 (F2_38G)",
+      "variantCode": "TSA00840P9",
+      "packUnit": "박스",
+      "packQty": 190,
+      "capacityMl": 840,
+      "production2025": 2971486
+    },
+    {
+      "code": "FM00035",
+      "name": "홍초 38G CL",
+      "variantCode": "FVI00038P9",
+      "packUnit": null,
+      "packQty": 8000,
+      "capacityMl": 38,
+      "production2025": 2947411
+    },
+    {
+      "code": "TR00909",
+      "name": "대상 미작 830 [F1_49G]",
+      "variantCode": "TSA00800P1",
+      "packUnit": "박스",
+      "packQty": 208,
+      "capacityMl": 800,
+      "production2025": 2844808
+    },
+    {
+      "code": "TM00329",
+      "name": "지평 1.7L 쌀막걸리 [ALC 40G WT]",
+      "variantCode": "TSA01700P9",
+      "packUnit": "파렛트",
+      "packQty": 924,
+      "capacityMl": 1700,
+      "production2025": 2789556
+    },
+    {
+      "code": "TM00553",
+      "name": "대상 쌈장 450ML",
+      "variantCode": "TSA00450P1",
+      "packUnit": "박스",
+      "packQty": 260,
+      "capacityMl": 450,
+      "production2025": 2730780
+    },
+    {
+      "code": "TR00088",
+      "name": "대상 올리고당 1.2L (F2_49G)",
+      "variantCode": "TVI00900P9",
+      "packUnit": "박스",
+      "packQty": 144,
+      "capacityMl": 900,
+      "production2025": 2552400
+    },
+    {
+      "code": "TR00434",
+      "name": "롯데 미림 1.8L",
+      "variantCode": "TSA01800P9",
+      "packUnit": "파렛트",
+      "packQty": 702,
+      "capacityMl": 1800,
+      "production2025": 2495610
+    },
+    {
+      "code": "TR00924",
+      "name": "대상 액젓 500 (F1_ 24G)",
+      "variantCode": "TSA00500P1",
+      "packUnit": "박스",
+      "packQty": 384,
+      "capacityMl": 500,
+      "production2025": 2433024
+    },
+    {
+      "code": "TR00755",
+      "name": "대상 홍초 900",
+      "variantCode": "TVI00900P9",
+      "packUnit": "파렛트",
+      "packQty": 2016,
+      "capacityMl": 900,
+      "production2025": 2364768
+    },
+    {
+      "code": "TM00571",
+      "name": "CJ 올리고당 500 [원터치 30G]",
+      "variantCode": "TSA00500P9",
+      "packUnit": "파렛트",
+      "packQty": 3220,
+      "capacityMl": 500,
+      "production2025": 2283204
+    },
+    {
+      "code": "FM00085",
+      "name": "ALCOA 41G WT",
+      "variantCode": "FTW00041P9",
+      "packUnit": null,
+      "packQty": 9600,
+      "capacityMl": null,
+      "production2025": 2213691
+    },
+    {
+      "code": "FM00075",
+      "name": "ALCOA 48G UV_CL 벤트X",
+      "variantCode": "FTC00049P9",
+      "packUnit": null,
+      "packQty": 7000,
+      "capacityMl": 49,
+      "production2025": 2197040
+    },
+    {
+      "code": "TR00930",
+      "name": "대상 간장 200 (F1_원터치 20G)",
+      "variantCode": "TSA00200P1",
+      "packUnit": "박스",
+      "packQty": 468,
+      "capacityMl": 200,
+      "production2025": 2141100
+    },
+    {
+      "code": "TM00644",
+      "name": "롯데 미림 900ML",
+      "variantCode": "TSA00900P1",
+      "packUnit": "파렛트",
+      "packQty": 1736,
+      "capacityMl": 900,
+      "production2025": 2037320
+    },
+    {
+      "code": "TM00490",
+      "name": "올가니카 190ML [CR 30%]",
+      "variantCode": "TZZ00190P1",
+      "packUnit": "필름",
+      "packQty": 276,
+      "capacityMl": 190,
+      "production2025": 1902466
+    },
+    {
+      "code": "TM00645",
+      "name": "롯데 미림 500ML",
+      "variantCode": "TSA00500P1",
+      "packUnit": "파렛트",
+      "packQty": 2808,
+      "capacityMl": 500,
+      "production2025": 1856088
+    },
+    {
+      "code": "TM00658",
+      "name": "#_ 500ML 생수원형 (270개)",
+      "variantCode": "TWA00500P1",
+      "packUnit": "박스",
+      "packQty": 270,
+      "capacityMl": 500,
+      "production2025": 1598940
+    },
+    {
+      "code": "TR00801",
+      "name": "대상 참치액 800 _ F2",
+      "variantCode": "TSA00800P9",
+      "packUnit": "박스",
+      "packQty": 176,
+      "capacityMl": 800,
+      "production2025": 1399560
+    },
+    {
+      "code": "TR00913",
+      "name": "신SP 1.8L HD 골드펄_ F1",
+      "variantCode": "TSA01800P1",
+      "packUnit": "박스",
+      "packQty": 100,
+      "capacityMl": 1800,
+      "production2025": 1344500
+    }
+  ]
+}

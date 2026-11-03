@@ -1,0 +1,319 @@
+// 새한프라텍 출고·재고 보드 — 데이터 모델
+// 근거: docs/requirements.md 5장(데이터 정의) + CLAUDE.md 3장(도메인 규칙)
+// 접속 정보는 prisma.config.ts(DIRECT_URL)와 src/lib/db.ts(DATABASE_URL)에서 읽는다.
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- 공통 코드 ----------
+
+/// 사업장 (음성·청주). TODO(Q2): 사업장별 재고 관리 여부 확정 전까지 화면 필터는 설정으로 켜고 끈다.
+model Site {
+  code      String @id
+  name      String
+  sortOrder Int    @default(0)
+
+  stocks       ErpStock[]
+  stockHistory ErpStockHistory[]
+  adjustments  Adjustment[]
+  plans        ProductionPlan[]
+}
+
+/// 공정 단계 설정. TODO(Q12): 단계 구분 확정 전까지 설정 테이블로 둔다.
+model ProcessStage {
+  code      String  @id
+  name      String
+  sortOrder Int     @default(0)
+  isFinal   Boolean @default(false)
+
+  plans ProductionPlan[]
+}
+
+/// 키-값 설정 (SITE_FILTER_ENABLED, SYNC_INTERVAL_MIN, SEED_DATA_NOTICE ...)
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- 품목·재고 (정의서 5.1) ----------
+
+/// 품목 마스터. code = ERP 품번. name = 품명/규격 한 문자열(샘플 데이터 형식, TODO(Q7)).
+model Item {
+  code           String   @id
+  name           String
+  nameNormalized String // 검색용: 공백 제거 + 소문자 (FR-03)
+  variantCode    String? // 품종 코드 (예: TSA01700P9)
+  capacityMl     Int?
+  packUnit       String? // 박스 / 파렛트 / 없음
+  packQty        Int? // 포장단위수량
+  unit           String   @default("개")
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  stocks       ErpStock[]
+  stockHistory ErpStockHistory[]
+  adjustments  Adjustment[]
+  plans        ProductionPlan[]
+  consultNotes ConsultNote[]
+  favorites    Favorite[]
+
+  @@index([nameNormalized])
+}
+
+/// 거래선 (상담 메모 고객명 자동완성용)
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+/// ERP 재고 현재값. 연동마다 upsert. capturedAt = 데이터 기준 시각 (FR-05)
+model ErpStock {
+  id         Int      @id @default(autoincrement())
+  itemCode   String
+  siteCode   String
+  erpQty     Int
+  capturedAt DateTime
+  syncRunId  Int?
+
+  item    Item     @relation(fields: [itemCode], references: [code])
+  site    Site     @relation(fields: [siteCode], references: [code])
+  syncRun SyncRun? @relation(fields: [syncRunId], references: [id])
+
+  @@unique([itemCode, siteCode])
+}
+
+/// ERP 재고 이력. 연동마다 행 추가, 1년 보관 (NFR-08)
+model ErpStockHistory {
+  id         Int      @id @default(autoincrement())
+  itemCode   String
+  siteCode   String
+  erpQty     Int
+  capturedAt DateTime
+  syncRunId  Int?
+
+  item    Item     @relation(fields: [itemCode], references: [code])
+  site    Site     @relation(fields: [siteCode], references: [code])
+  syncRun SyncRun? @relation(fields: [syncRunId], references: [id])
+
+  @@index([itemCode, siteCode, capturedAt])
+}
+
+// ---------- 재고 변동 (정의서 5.2) ----------
+
+/// TODO(Q4): 변동 항목 종류와 ERP 반영 시점 확정 전까지 4종 고정
+enum AdjustmentType {
+  DEFECT // 불량
+  HOLD // 보류
+  SHIP_PLANNED // 출고 예정 (TODO(Q3))
+  OTHER // 기타
+}
+
+enum AdjustmentStatus {
+  ACTIVE // 적용 중
+  RELEASED // 해제됨
+}
+
+/// TODO(Q10): 2단계 QR 스캔 입력을 위해 미리 둔 구분
+enum AdjustmentSource {
+  MANUAL
+  SCAN
+}
+
+/// 재고 변동. 해제돼도 행은 지우지 않는다 (CLAUDE.md 규칙 2)
+model Adjustment {
+  id          String           @id @default(cuid())
+  itemCode    String
+  siteCode    String
+  type        AdjustmentType
+  qty         Int // 차감할 수량, 양수
+  reason      String
+  status      AdjustmentStatus @default(ACTIVE)
+  source      AdjustmentSource @default(MANUAL)
+  createdById String
+  createdAt   DateTime         @default(now())
+  releasedById String?
+  releasedAt  DateTime?
+  releaseNote String?
+
+  item       Item  @relation(fields: [itemCode], references: [code])
+  site       Site  @relation(fields: [siteCode], references: [code])
+  createdBy  User  @relation("AdjustmentCreatedBy", fields: [createdById], references: [id])
+  releasedBy User? @relation("AdjustmentReleasedBy", fields: [releasedById], references: [id])
+
+  @@index([itemCode, siteCode, status])
+  @@index([createdAt])
+}
+
+// ---------- 생산 계획·공정 (정의서 5.3) ----------
+
+model ProductionPlan {
+  id             String    @id @default(cuid())
+  itemCode       String
+  siteCode       String
+  plannedQty     Int
+  startDate      DateTime? @db.Date // 착수 예정일
+  dueDate        DateTime  @db.Date // 완료 예정일 (항상 "예정"으로 표시)
+  stageCode      String
+  stageChangedAt DateTime  @default(now()) // FR-15 마지막 변경 시각
+  memo           String?
+  createdById    String
+  createdAt      DateTime  @default(now())
+  updatedById    String
+  updatedAt      DateTime  @updatedAt
+
+  item      Item         @relation(fields: [itemCode], references: [code])
+  site      Site         @relation(fields: [siteCode], references: [code])
+  stage     ProcessStage @relation(fields: [stageCode], references: [code])
+  createdBy User         @relation("PlanCreatedBy", fields: [createdById], references: [id])
+  updatedBy User         @relation("PlanUpdatedBy", fields: [updatedById], references: [id])
+
+  @@index([itemCode, dueDate])
+}
+
+// ---------- 상담 메모 (정의서 5.4, NFR-09) ----------
+
+enum ConsultStatus {
+  OPEN // 상담 중
+  CONVERTED // 수주 전환
+  CLOSED // 종료
+}
+
+/// TODO(Q13): 열람 범위 확정 전까지 로그인 사용자 전원 열람, 작성자·admin만 수정
+model ConsultNote {
+  id           String        @id @default(cuid())
+  itemCode     String
+  customerName String
+  requestedQty Int
+  desiredDate  DateTime      @db.Date
+  content      String
+  status       ConsultStatus @default(OPEN)
+  authorId     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime? // 소프트 삭제 (이력 보존)
+
+  item    Item                 @relation(fields: [itemCode], references: [code])
+  author  User                 @relation(fields: [authorId], references: [id])
+  history ConsultNoteHistory[]
+
+  @@index([itemCode, desiredDate])
+  @@index([authorId])
+}
+
+enum HistoryAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+/// 상담 메모 수정·삭제 이력 (NFR-09)
+model ConsultNoteHistory {
+  id       Int           @id @default(autoincrement())
+  noteId   String
+  action   HistoryAction
+  snapshot Json // 변경 직전(또는 생성 시) 메모 내용
+  actorId  String
+  at       DateTime      @default(now())
+
+  note  ConsultNote @relation(fields: [noteId], references: [id])
+  actor User        @relation(fields: [actorId], references: [id])
+
+  @@index([noteId])
+}
+
+// ---------- 사용자·세션 ----------
+
+enum Role {
+  VIEWER // 영업팀: 조회·상담 메모
+  EDITOR // 생산지원팀: 변동·생산 계획 입력
+  ADMIN // 운영 관리자
+}
+
+model User {
+  id           String   @id @default(cuid())
+  loginId      String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(VIEWER)
+  isActive     Boolean  @default(true) // false면 즉시 차단 (FR-13)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions            Session[]
+  favorites           Favorite[]
+  consultNotes        ConsultNote[]
+  consultNoteHistory  ConsultNoteHistory[]
+  adjustmentsCreated  Adjustment[]         @relation("AdjustmentCreatedBy")
+  adjustmentsReleased Adjustment[]         @relation("AdjustmentReleasedBy")
+  plansCreated        ProductionPlan[]     @relation("PlanCreatedBy")
+  plansUpdated        ProductionPlan[]     @relation("PlanUpdatedBy")
+}
+
+/// 세션 쿠키 토큰. id 자체가 쿠키 값
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// 즐겨찾기 (FR-11)
+model Favorite {
+  userId    String
+  itemCode  String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemCode], references: [code])
+
+  @@id([userId, itemCode])
+}
+
+// ---------- ERP 연동 기록 (정의서 7장, FR-09/FR-10) ----------
+
+enum SyncKind {
+  BASELINE // 매일 09:00 기초재고
+  INCREMENTAL // 15분 갱신
+}
+
+enum SyncSource {
+  CSV_FILE
+  MOCK
+  DB
+  SEED
+}
+
+enum SyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model SyncRun {
+  id           Int        @id @default(autoincrement())
+  kind         SyncKind
+  source       SyncSource
+  status       SyncStatus @default(RUNNING)
+  startedAt    DateTime   @default(now())
+  finishedAt   DateTime?
+  itemCount    Int        @default(0)
+  errorMessage String?
+
+  stocks       ErpStock[]
+  stockHistory ErpStockHistory[]
+
+  @@index([startedAt])
+}
