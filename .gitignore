@@ -1,0 +1,28 @@
+# dependencies / build
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# 기업 실적 원본 데이터(거래선·기사명 포함) — 저장소에 올리지 않음
+docs/sample/*.xls
+docs/sample/*.xlsx
+docs/sample/*.csv
+
+# agent logs
+agent/logs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# 사용자가 따로 정리 중인 폴더/파일
+desktop.ini
